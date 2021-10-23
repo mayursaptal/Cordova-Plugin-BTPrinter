@@ -4,6 +4,10 @@ var BTPrinter = {
     status: function (fnSuccess, fnError) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "status", []);
     },
+
+    OpenDrawer: function (fnSuccess, fnError) {
+        exec(fnSuccess, fnError, "OpenDrawer", "status", []);
+    },
     list: function (fnSuccess, fnError) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "list", []);
     },
