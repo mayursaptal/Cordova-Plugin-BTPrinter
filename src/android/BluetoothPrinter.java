@@ -91,7 +91,11 @@ public class BluetoothPrinter extends CordovaPlugin {
         if (action.equals("status")) {
             checkBTStatus(callbackContext);
             return true;
+        } else if (action.equals("OpenDrawer")) {
+            OpenDrawer(callbackContext);
+            return true;
         } else if (action.equals("list")) {
+
             listBT(callbackContext);
             return true;
         } else if (action.equals("connect")) {
@@ -224,6 +228,28 @@ public class BluetoothPrinter extends CordovaPlugin {
                 return false;
             }
         } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
+        }
+        return false;
+    }
+
+    boolean OpenDrawer(CallbackContext callbackContext) {
+        try {
+
+            mmOutputStream.write(27);
+            mmOutputStream.write(112);
+            mmOutputStream.write(0);
+            mmOutputStream.write(148);
+            mmOutputStream.write(49);
+            mmOutputStream.flush();
+
+            callbackContext.success("open");
+            return true;
+
+        } catch (IOException e) {
             String errMsg = e.getMessage();
             Log.e(LOG_TAG, errMsg);
             e.printStackTrace();
@@ -424,33 +450,33 @@ public class BluetoothPrinter extends CordovaPlugin {
     private static byte[] selFontSize(int size) {
         byte[] char_size = CHAR_SIZE_00;
         switch (size) {
-            case 1:
-                char_size = CHAR_SIZE_01;
-                break;
-            case 8:
-                char_size = CHAR_SIZE_08;
-                break;
-            case 10:
-                char_size = CHAR_SIZE_10;
-                break;
-            case 11:
-                char_size = CHAR_SIZE_11;
-                break;
-            case 20:
-                char_size = CHAR_SIZE_20;
-                break;
-            case 30:
-                char_size = CHAR_SIZE_30;
-                break;
-            case 31:
-                char_size = CHAR_SIZE_31;
-                break;
-            case 51:
-                char_size = CHAR_SIZE_51;
-                break;
-            case 61:
-                char_size = CHAR_SIZE_61;
-                break;
+        case 1:
+            char_size = CHAR_SIZE_01;
+            break;
+        case 8:
+            char_size = CHAR_SIZE_08;
+            break;
+        case 10:
+            char_size = CHAR_SIZE_10;
+            break;
+        case 11:
+            char_size = CHAR_SIZE_11;
+            break;
+        case 20:
+            char_size = CHAR_SIZE_20;
+            break;
+        case 30:
+            char_size = CHAR_SIZE_30;
+            break;
+        case 31:
+            char_size = CHAR_SIZE_31;
+            break;
+        case 51:
+            char_size = CHAR_SIZE_51;
+            break;
+        case 61:
+            char_size = CHAR_SIZE_61;
+            break;
         }
         return char_size;
     }
@@ -459,15 +485,15 @@ public class BluetoothPrinter extends CordovaPlugin {
     private static byte[] selAlignTitle(int align) {
         byte[] char_align = ESC_ALIGN_LEFT;
         switch (align) {
-            case 0:
-                char_align = ESC_ALIGN_LEFT;
-                break;
-            case 1:
-                char_align = ESC_ALIGN_CENTER;
-                break;
-            case 2:
-                char_align = ESC_ALIGN_RIGHT;
-                break;
+        case 0:
+            char_align = ESC_ALIGN_LEFT;
+            break;
+        case 1:
+            char_align = ESC_ALIGN_CENTER;
+            break;
+        case 2:
+            char_align = ESC_ALIGN_RIGHT;
+            break;
         }
         return char_align;
     }
@@ -611,15 +637,15 @@ public class BluetoothPrinter extends CordovaPlugin {
                 byte[] command = decodeBitmapUrl(bmp);
                 Log.d(LOG_TAG, "SWITCH ALIGN -> " + align);
                 switch (align) {
-                    case 0:
-                        printLeftImage(command);
-                        break;
-                    case 1:
-                        printCenterImage(command);
-                        break;
-                    case 2:
-                        printRightImage(command);
-                        break;
+                case 0:
+                    printLeftImage(command);
+                    break;
+                case 1:
+                    printCenterImage(command);
+                    break;
+                case 2:
+                    printRightImage(command);
+                    break;
                 }
             } else {
                 Log.d(LOG_TAG, "PRINT PHOTO ERROR THE FILE ISN'T EXISTS");
@@ -692,18 +718,18 @@ public class BluetoothPrinter extends CordovaPlugin {
             // not work
             Log.d(LOG_TAG, "SWITCH ALIGN BASE64 -> " + align);
             switch (align) {
-                case 0:
-                    mmOutputStream.write(ESC_ALIGN_LEFT);
-                    mmOutputStream.write(bt);
-                    break;
-                case 1:
-                    mmOutputStream.write(ESC_ALIGN_CENTER);
-                    mmOutputStream.write(bt);
-                    break;
-                case 2:
-                    mmOutputStream.write(ESC_ALIGN_RIGHT);
-                    mmOutputStream.write(bt);
-                    break;
+            case 0:
+                mmOutputStream.write(ESC_ALIGN_LEFT);
+                mmOutputStream.write(bt);
+                break;
+            case 1:
+                mmOutputStream.write(ESC_ALIGN_CENTER);
+                mmOutputStream.write(bt);
+                break;
+            case 2:
+                mmOutputStream.write(ESC_ALIGN_RIGHT);
+                mmOutputStream.write(bt);
+                break;
             }
             // tell the user data were sent
             Log.d(LOG_TAG, "PRINT BASE64 SEND");
@@ -777,81 +803,81 @@ public class BluetoothPrinter extends CordovaPlugin {
             // Validate barcode data
             byte[] bc_system = null;
             switch (system) {
-                case 0:
-                    Integer[] valid_sizes_0 = { 11, 12 };
-                    if (!TextUtils.isDigitsOnly(data)) {
-                        callbackContext.error("Invalid data type: UPC-A expects numbers 0-9");
-                        return false;
-                    } else if (!Arrays.asList(valid_sizes_0).contains(data.length())) {
-                        callbackContext.error("Invalid data length: UPC-A requires 11-12 characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_UPC_A;
-                    }
-                    break;
-                case 1:
-                    Integer[] valid_sizes_1 = { 6, 7, 8, 11, 12 };
-                    if (!TextUtils.isDigitsOnly(data)) {
-                        callbackContext.error("Invalid data type: UPC-E expects numbers 0-9");
-                        return false;
-                    } else if (!Arrays.asList(valid_sizes_1).contains(data.length())) {
-                        callbackContext.error("Invalid data length: UPC-E requires 6-8 or 11-12 characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_UPC_E;
-                    }
-                    break;
-                case 2:
-                    Integer[] valid_sizes_2 = { 12, 13 };
-                    if (!TextUtils.isDigitsOnly(data)) {
-                        callbackContext.error("Invalid data type: EAN13 expects numbers 0-9");
-                        return false;
-                    } else if (!Arrays.asList(valid_sizes_2).contains(data.length())) {
-                        callbackContext.error("Invalid data length: EAN13 requires 12-13 characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_EAN13;
-                    }
-                    break;
-                case 3:
-                    Integer[] valid_sizes_3 = { 7, 8 };
-                    if (!TextUtils.isDigitsOnly(data)) {
-                        callbackContext.error("Invalid data type: EAN8 expects numbers 0-9");
-                        return false;
-                    } else if (!Arrays.asList(valid_sizes_3).contains(data.length())) {
-                        callbackContext.error("Invalid data length: EAN8 requires 7-8 characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_EAN8;
-                    }
-                    break;
-                case 4:
-                    if (data.length() > 255) {
-                        callbackContext.error("Data length too long for CODE39");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_CODE39;
-                    }
-                    break;
-                case 5:
-                    if (!TextUtils.isDigitsOnly(data)) {
-                        callbackContext.error("Invalid data type: ITF expects numbers 0-9");
-                        return false;
-                    } else if (data.length() < 2) {
-                        callbackContext.error("Invalid data length: ITF requires 2+ characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_ITF;
-                    }
-                    break;
-                case 6:
-                    if (data.length() < 2) {
-                        callbackContext.error("Invalid data length: CODABAR requires 2+ characters");
-                        return false;
-                    } else {
-                        bc_system = BARCODE_CODABAR;
-                    }
-                    break;
+            case 0:
+                Integer[] valid_sizes_0 = { 11, 12 };
+                if (!TextUtils.isDigitsOnly(data)) {
+                    callbackContext.error("Invalid data type: UPC-A expects numbers 0-9");
+                    return false;
+                } else if (!Arrays.asList(valid_sizes_0).contains(data.length())) {
+                    callbackContext.error("Invalid data length: UPC-A requires 11-12 characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_UPC_A;
+                }
+                break;
+            case 1:
+                Integer[] valid_sizes_1 = { 6, 7, 8, 11, 12 };
+                if (!TextUtils.isDigitsOnly(data)) {
+                    callbackContext.error("Invalid data type: UPC-E expects numbers 0-9");
+                    return false;
+                } else if (!Arrays.asList(valid_sizes_1).contains(data.length())) {
+                    callbackContext.error("Invalid data length: UPC-E requires 6-8 or 11-12 characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_UPC_E;
+                }
+                break;
+            case 2:
+                Integer[] valid_sizes_2 = { 12, 13 };
+                if (!TextUtils.isDigitsOnly(data)) {
+                    callbackContext.error("Invalid data type: EAN13 expects numbers 0-9");
+                    return false;
+                } else if (!Arrays.asList(valid_sizes_2).contains(data.length())) {
+                    callbackContext.error("Invalid data length: EAN13 requires 12-13 characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_EAN13;
+                }
+                break;
+            case 3:
+                Integer[] valid_sizes_3 = { 7, 8 };
+                if (!TextUtils.isDigitsOnly(data)) {
+                    callbackContext.error("Invalid data type: EAN8 expects numbers 0-9");
+                    return false;
+                } else if (!Arrays.asList(valid_sizes_3).contains(data.length())) {
+                    callbackContext.error("Invalid data length: EAN8 requires 7-8 characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_EAN8;
+                }
+                break;
+            case 4:
+                if (data.length() > 255) {
+                    callbackContext.error("Data length too long for CODE39");
+                    return false;
+                } else {
+                    bc_system = BARCODE_CODE39;
+                }
+                break;
+            case 5:
+                if (!TextUtils.isDigitsOnly(data)) {
+                    callbackContext.error("Invalid data type: ITF expects numbers 0-9");
+                    return false;
+                } else if (data.length() < 2) {
+                    callbackContext.error("Invalid data length: ITF requires 2+ characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_ITF;
+                }
+                break;
+            case 6:
+                if (data.length() < 2) {
+                    callbackContext.error("Invalid data length: CODABAR requires 2+ characters");
+                    return false;
+                } else {
+                    bc_system = BARCODE_CODABAR;
+                }
+                break;
             }
 
             // Set alignment
