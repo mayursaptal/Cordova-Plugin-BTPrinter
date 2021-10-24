@@ -513,20 +513,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             mmOutputStream.write(48);
             mmOutputStream.write(0);
 
-            Integer gs = 29;
-            mmOutputStream.write(intToByteArray(gs));
-            Integer h = 104;
-            mmOutputStream.write(intToByteArray(h));
-            Integer n = 162;
-            mmOutputStream.write(intToByteArray(n));
 
-            // Setting Width
-            Integer gsWidth = 29;
-            mmOutputStream.write(intToByteArray(gsWidth));
-            Integer w = 119;
-            mmOutputStream.write(intToByteArray(w));
-            Integer nWidth = 2;
-            mmOutputStream.write(intToByteArray(nWidth));
 
             mmOutputStream.flush();
             Log.d(LOG_TAG, "RESET FONTS");
@@ -536,13 +523,6 @@ public class BluetoothPrinter extends CordovaPlugin {
 
     }
 
-    private byte[] intToByteArray(final int i) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(bos);
-        dos.writeInt(i);
-        dos.flush();
-        return bos.toByteArray();
-    }
 
     boolean printText(CallbackContext callbackContext, String msg) throws IOException {
         try {
